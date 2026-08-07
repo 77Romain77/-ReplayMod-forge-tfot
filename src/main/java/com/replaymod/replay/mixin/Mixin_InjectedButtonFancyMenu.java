@@ -1,6 +1,8 @@
 package com.replaymod.replay.mixin;
 
 import com.replaymod.replay.handler.GuiHandler;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,6 +26,14 @@ public abstract class Mixin_InjectedButtonFancyMenu {
     private static final int REPLAYMOD_BUTTON_REPLAY_VIEWER = 17890234;
     @Unique
     private static final int REPLAYMOD_BUTTON_EXIT_REPLAY = 17890235;
+    @Unique
+    private static final int REPLAYMOD_EXIT_REPLAY_WIDTH = 98;
+    @Unique
+    private static final int REPLAYMOD_EXIT_REPLAY_RIGHT_MARGIN = 20;
+
+    @Shadow
+    @Final
+    public Screen guiScreen;
 
     @Shadow
     @Final
@@ -35,12 +45,21 @@ public abstract class Mixin_InjectedButtonFancyMenu {
         if (id == REPLAYMOD_BUTTON_REPLAY_VIEWER) {
             identifier = "replaymod_replay_viewer";
         } else if (id == REPLAYMOD_BUTTON_EXIT_REPLAY) {
+            replaymod$applyExitReplayDefaultLayout();
             identifier = "replaymod_exit_replay";
         } else {
             return;
         }
 
         replaymod$setFancyMenuIdentifier(this, identifier);
+    }
+
+    @Unique
+    private void replaymod$applyExitReplayDefaultLayout() {
+        ClickableWidget widget = (ClickableWidget) (Object) this;
+        widget.setWidth(REPLAYMOD_EXIT_REPLAY_WIDTH);
+        widget.setX(Math.max(0, guiScreen.width - REPLAYMOD_EXIT_REPLAY_RIGHT_MARGIN - REPLAYMOD_EXIT_REPLAY_WIDTH));
+        widget.setY(Math.max(0, guiScreen.height / 2 - widget.getHeight() / 2));
     }
 
     @Unique
