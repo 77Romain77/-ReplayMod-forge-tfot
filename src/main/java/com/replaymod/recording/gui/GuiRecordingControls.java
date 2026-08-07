@@ -5,6 +5,7 @@ import com.replaymod.core.utils.Utils;
 import com.replaymod.core.versions.MCVer;
 import com.replaymod.editor.gui.MarkerProcessor;
 import com.replaymod.recording.packet.PacketListener;
+import com.replaymod.replay.ScreenButtonExtension;
 import de.johni0702.minecraft.gui.container.VanillaGuiScreen;
 import de.johni0702.minecraft.gui.utils.EventRegistrations;
 import de.johni0702.minecraft.gui.versions.callbacks.InitScreenCallback;
@@ -19,6 +20,7 @@ import net.minecraft.text.Text;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -127,8 +129,13 @@ public class GuiRecordingControls extends EventRegistrations {
         setFancyMenuWidgetIdentifier(buttonStartStop, FANCYMENU_START_STOP_ID);
 
         updateState();
-        buttonList.add(buttonPauseResume);
-        buttonList.add(buttonStartStop);
+
+        // The callback's buttonList is a read-only view on modern Forge and throws
+        // UnsupportedOperationException when modified. Use ReplayMod's mutable Screen
+        // adapter instead; it registers the widgets in drawables, selectables and children.
+        List<ClickableWidget> mutableButtons = ((ScreenButtonExtension) guiScreen).replay_getButtons();
+        mutableButtons.add(buttonPauseResume);
+        mutableButtons.add(buttonStartStop);
         //#endif
     }
 
