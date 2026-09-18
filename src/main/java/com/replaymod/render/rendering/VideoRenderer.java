@@ -280,8 +280,17 @@ public class VideoRenderer implements RenderInfo {
                 //#endif
         );
         //#if MC<11600
-        //$$ int elapsedTicks = timer.ticksThisFrame;
+        //$ int elapsedTicks = timer.ticksThisFrame;
         //#endif
+
+        // ReplayTimer intentionally restores its own timing state after updating the wrapped
+        // Minecraft timer. That also restores lastFrameDuration, leaving it unrelated to the
+        // exported video's FPS. EMF/Fresh Animations uses Minecraft's frame duration for its
+        // frame_time variable, so expose the exact duration of one output frame here.
+        //
+        // Keep tickDelta/ticksThisFrame untouched: AbstractTimelinePlayer derives those from
+        // the replay timestamp, which is required for ReplayMod time remapping/slow motion.
+        timer.lastFrameDuration = 20.0F / fps;
 
         executeTaskQueue();
 
